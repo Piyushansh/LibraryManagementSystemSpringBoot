@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Books')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="page-wrapper">
+<div class="container">
+
+    <!-- Page Header -->
+    <div class="page-header d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <h2><i class="bi bi-book me-2"></i>Book Catalogue</h2>
+            <p class="text-muted mb-0" th:text="'Showing ' + ${totalItems} + ' book(s)'">Books</p>
+        </div>
+        <a th:href="@{/books/add}" class="btn btn-primary" sec:authorize="hasRole('ADMIN')">
+            <i class="bi bi-plus-lg me-2"></i>Add New Book
+        </a>
+    </div>
+
+    <!-- Flash Messages -->
+    <div th:if="${successMessage}" class="alert alert-success alert-dismissible fade show">
+        <i class="bi bi-check-circle me-2"></i><span th:text="${successMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    <div th:if="${errorMessage}" class="alert alert-danger alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle me-2"></i><span th:text="${errorMessage}"></span>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+
+    <!-- Search Bar -->
+    <div class="card mb-4">
+        <div class="card-body py-3">
+            <form th:action="@{/books}" method="get" class="d-flex gap-2">
+                <div class="search-box flex-grow-1">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text"
+                           name="keyword"
+                           class="form-control"
+                           th:value="${keyword}"
+                           placeholder="Search by title or author...">
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i class="bi bi-search me-1"></i>Search
+                </button>
+                <a th:href="@{/books}" class="btn btn-outline-secondary">
+                    <i class="bi bi-x-circle me-1"></i>Clear
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Book Grid -->
+    <div class="row g-4 mb-4">
+        <div th:each="book : ${books}" class="col-sm-6 col-md-4 col-lg-3">
+            <div class="card book-card h-100">
+                <!-- Book color header based on availability -->
+                <div class="card-header text-white py-3"
+                     th:classappend="${book.availableQuantity > 0} ? 'bg-primary' : 'bg-secondary'">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <i class="bi bi-book-fill fs-3"></i>
+                        <span class="badge"
+                              th:classappend="${book.availableQuantity > 0} ? 'bg-success' : 'bg-danger'"
+                              th:text="${book.availableQuantity > 0} ? 'Available' : 'Unavailable'">
+                            Status
+                        </span>
+                    </div>
+                </div>
+                <div class="card-body d-flex flex-column">
+                    <h6 class="card-title" th:text="${book.title}" title="Book Title">Title</h6>
+                    <p class="text-muted small mb-1">
+                        <i class="bi bi-person me-1"></i>
+                        <span th:text="${book.author}">Author</span>
+                    </p>
+                    <p class="text-muted small mb-2" th:if="${book.category}">
+                        <i class="bi bi-tag me-1"></i>
+                        <span th:text="${book.category}">Category</span>
+                    </p>
+                    <div class="mt-auto">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <small class="text-muted">
+                                <i class="bi bi-stack me-1"></i>
+                                <span th:text="${book.availableQuantity}">0</span>/
+                                <span th:text="${book.quantity}">0</span> copies
+                            </small>
+                        </div>
+                        <!-- Action Buttons -->
+                        <div class="d-flex gap-1 flex-wrap">
+                            <!-- Admin: Edit and Delete -->
+                            <a th:href="@{/books/edit/{id}(id=${book.id})}"
+                               class="btn btn-sm btn-outline-primary flex-fill"
+                               sec:authorize="hasRole('ADMIN')">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                            <a th:href="@{/books/delete/{id}(id=${book.id})}"
+                               class="btn btn-sm btn-outline-danger flex-fill"
+                               sec:authorize="hasRole('ADMIN')"
+                               onclick="return confirm('Delete this book?')">
+                                <i class="bi bi-trash"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- No results message -->
+        <div th:if="${#lists.isEmpty(books)}" class="col-12">
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="bi bi-search fs-1 text-muted d-block mb-3"></i>
+                    <h5 class="text-muted">No books found</h5>
+                    <p class="text-muted" th:if="${keyword != ''}">
+                        No results for "<span th:text="${keyword}"></span>"
+                    </p>
+                    <a th:href="@{/books/add}" class="btn btn-primary mt-2" sec:authorize="hasRole('ADMIN')">
+                        <i class="bi bi-plus-lg me-2"></i>Add First Book
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================
+         PAGINATION
+         Thymeleaf builds the page links dynamically
+         ============================================ -->
+    <nav th:if="${totalPages > 1}" aria-label="Page navigation">
+        <ul class="pagination justify-content-center">
+
+            <!-- Previous Button -->
+            <li class="page-item" th:classappend="${currentPage == 0} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/books(page=${currentPage - 1}, keyword=${keyword})}">
+                    <i class="bi bi-chevron-left"></i>
+                </a>
+            </li>
+
+            <!-- Page Numbers -->
+            <li th:each="i : ${#numbers.sequence(0, totalPages - 1)}"
+                class="page-item"
+                th:classappend="${i == currentPage} ? 'active'">
+                <a class="page-link"
+                   th:href="@{/books(page=${i}, keyword=${keyword})}"
+                   th:text="${i + 1}">1</a>
+            </li>
+
+            <!-- Next Button -->
+            <li class="page-item" th:classappend="${currentPage == totalPages - 1} ? 'disabled'">
+                <a class="page-link"
+                   th:href="@{/books(page=${currentPage + 1}, keyword=${keyword})}">
+                    <i class="bi bi-chevron-right"></i>
+                </a>
+            </li>
+
+        </ul>
+    </nav>
+
+</div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

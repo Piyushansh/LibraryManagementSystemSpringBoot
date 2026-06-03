@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Manage Users')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="page-wrapper">
+<div class="container">
+
+    <div class="page-header">
+        <h2><i class="bi bi-people me-2"></i>Registered Users</h2>
+        <p class="text-muted mb-0" th:text="'Total ' + ${#lists.size(users)} + ' user(s)'">Users</p>
+    </div>
+
+    <div class="card">
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Role</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="user, iterStat : ${users}">
+                            <td th:text="${iterStat.count}">1</td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="rounded-circle bg-primary text-white d-flex align-items-center
+                                                justify-content-center me-2"
+                                         style="width:36px;height:36px;font-size:0.9rem;font-weight:700;">
+                                        <span th:text="${#strings.substring(user.name, 0, 1).toUpperCase()}">A</span>
+                                    </div>
+                                    <span th:text="${user.name}">Name</span>
+                                </div>
+                            </td>
+                            <td th:text="${user.email}">email@example.com</td>
+                            <td>
+                                <span class="badge"
+                                      th:classappend="${user.role == 'ROLE_ADMIN'} ? 'bg-warning text-dark' : 'bg-info text-dark'"
+                                      th:text="${user.role == 'ROLE_ADMIN'} ? 'Admin' : 'User'">
+                                    Role
+                                </span>
+                            </td>
+                            <td>
+                                <a th:href="@{/admin/users/{id}(id=${user.id})}"
+                                   class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-eye me-1"></i>View Profile
+                                </a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(users)}">
+                            <td colspan="5" class="text-center text-muted py-5">
+                                <i class="bi bi-people fs-1 d-block mb-2"></i>
+                                No users registered yet.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

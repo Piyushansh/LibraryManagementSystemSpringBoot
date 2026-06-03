@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('User Profile')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="page-wrapper">
+<div class="container">
+
+    <a th:href="@{/admin/users}" class="btn btn-outline-secondary mb-3">
+        <i class="bi bi-arrow-left me-2"></i>Back to Users
+    </a>
+
+    <div class="row g-4">
+
+        <!-- Profile Card -->
+        <div class="col-md-4">
+            <div class="profile-card card">
+                <div class="profile-header">
+                    <div class="profile-avatar">
+                        <i class="bi bi-person-fill"></i>
+                    </div>
+                    <h4 th:text="${user.name}">Name</h4>
+                    <p class="mb-0 opacity-75" th:text="${user.email}">email</p>
+                    <span class="badge mt-2"
+                          th:classappend="${user.role == 'ROLE_ADMIN'} ? 'bg-warning text-dark' : 'bg-light text-dark'"
+                          th:text="${user.role == 'ROLE_ADMIN'} ? 'Administrator' : 'Library Member'">
+                        Role
+                    </span>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5 text-muted">User ID</dt>
+                        <dd class="col-sm-7" th:text="'#' + ${user.id}">1</dd>
+                        <dt class="col-sm-5 text-muted">Role</dt>
+                        <dd class="col-sm-7" th:text="${user.role}">Role</dd>
+                        <dt class="col-sm-5 text-muted">Books Issued</dt>
+                        <dd class="col-sm-7"
+                            th:text="${user.issuedBooks != null} ? ${#lists.size(user.issuedBooks)} : 0">0</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <!-- Issued Books History -->
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <i class="bi bi-journal-bookmark me-2"></i>Book History
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Book</th>
+                                    <th>Issue Date</th>
+                                    <th>Due Date</th>
+                                    <th>Return Date</th>
+                                    <th>Fine</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="issue : ${user.issuedBooks}">
+                                    <td th:text="${issue.book.title}">Title</td>
+                                    <td th:text="${issue.issueDate}">Date</td>
+                                    <td th:text="${issue.dueDate}">Due</td>
+                                    <td th:text="${issue.returnDate != null} ? ${issue.returnDate} : '—'">—</td>
+                                    <td th:text="${issue.fine > 0} ? '₹' + ${issue.fine} : '—'">—</td>
+                                    <td>
+                                        <span class="badge"
+                                              th:classappend="${issue.status == 'ISSUED'} ? 'badge-issued' : 'badge-returned'"
+                                              th:text="${issue.status}">Status</span>
+                                    </td>
+                                </tr>
+                                <tr th:if="${user.issuedBooks == null or #lists.isEmpty(user.issuedBooks)}">
+                                    <td colspan="6" class="text-center text-muted py-4">
+                                        No book history found.
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

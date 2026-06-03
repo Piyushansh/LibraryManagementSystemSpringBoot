@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head th:replace="~{fragments/layout :: head('Book Detail')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="page-wrapper">
+<div class="container">
+<div class="row justify-content-center">
+<div class="col-lg-7">
+
+    <a th:href="@{/books}" class="btn btn-outline-secondary mb-3">
+        <i class="bi bi-arrow-left me-2"></i>Back to Books
+    </a>
+
+    <div class="card">
+        <div class="card-header bg-primary text-white py-3">
+            <h4 class="mb-0"><i class="bi bi-book-half me-2"></i><span th:text="${book.title}">Title</span></h4>
+        </div>
+        <div class="card-body p-4">
+            <dl class="row">
+                <dt class="col-sm-4 text-muted">Author</dt>
+                <dd class="col-sm-8" th:text="${book.author}">Author</dd>
+
+                <dt class="col-sm-4 text-muted">Category</dt>
+                <dd class="col-sm-8" th:text="${book.category ?: 'N/A'}">Category</dd>
+
+                <dt class="col-sm-4 text-muted">Total Copies</dt>
+                <dd class="col-sm-8" th:text="${book.quantity}">0</dd>
+
+                <dt class="col-sm-4 text-muted">Available</dt>
+                <dd class="col-sm-8">
+                    <span th:text="${book.availableQuantity}">0</span>
+                    <span class="badge ms-2"
+                          th:classappend="${book.availableQuantity > 0} ? 'bg-success' : 'bg-danger'"
+                          th:text="${book.availableQuantity > 0} ? 'In Stock' : 'Out of Stock'">
+                    </span>
+                </dd>
+
+                <dt class="col-sm-4 text-muted">Currently Issued</dt>
+                <dd class="col-sm-8" th:text="${book.quantity - book.availableQuantity}">0</dd>
+            </dl>
+
+            <div class="d-flex gap-2 pt-3 border-top" sec:authorize="hasRole('ADMIN')">
+                <a th:href="@{/books/edit/{id}(id=${book.id})}" class="btn btn-primary">
+                    <i class="bi bi-pencil me-2"></i>Edit
+                </a>
+                <a th:href="@{/books/delete/{id}(id=${book.id})}" class="btn btn-danger"
+                   onclick="return confirm('Delete this book permanently?')">
+                    <i class="bi bi-trash me-2"></i>Delete
+                </a>
+            </div>
+        </div>
+    </div>
+
+</div>
+</div>
+</div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

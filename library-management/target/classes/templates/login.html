@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Login')}"></head>
+<body>
+
+<!-- ============================================
+     LOGIN PAGE
+     - Users enter email and password
+     - Spring Security handles authentication
+     - loginProcessingUrl="/login" (set in SecurityConfig)
+     ============================================ -->
+<div class="auth-wrapper">
+    <div class="auth-card">
+
+        <!-- Logo -->
+        <div class="auth-logo">
+            <i class="bi bi-book-half"></i>
+        </div>
+
+        <h2 class="auth-title">Library Management</h2>
+        <p class="auth-subtitle">Sign in to your account</p>
+
+        <!-- Error Alert (shown when login fails) -->
+        <div th:if="${errorMessage}" class="alert alert-danger d-flex align-items-center mb-3" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <span th:text="${errorMessage}">Error</span>
+        </div>
+
+        <!-- Success Alert (shown after logout or registration) -->
+        <div th:if="${successMessage}" class="alert alert-success d-flex align-items-center mb-3" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <span th:text="${successMessage}">Success</span>
+        </div>
+
+        <!-- LOGIN FORM -->
+        <!-- action="/login" → Spring Security intercepts this POST -->
+        <!-- method="post"   → must be POST for security -->
+        <form th:action="@{/login}" method="post">
+
+            <!-- Email Field -->
+            <div class="mb-3">
+                <label for="email" class="form-label">
+                    <i class="bi bi-envelope me-1"></i>Email Address
+                </label>
+                <input type="email"
+                       id="email"
+                       name="email"
+                       class="form-control"
+                       placeholder="you@example.com"
+                       required autofocus>
+            </div>
+
+            <!-- Password Field -->
+            <div class="mb-4">
+                <label for="password" class="form-label">
+                    <i class="bi bi-lock me-1"></i>Password
+                </label>
+                <input type="password"
+                       id="password"
+                       name="password"
+                       class="form-control"
+                       placeholder="Enter your password"
+                       required>
+            </div>
+
+            <!-- CSRF Token (Spring Security requires this for forms) -->
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+            <!-- Submit Button -->
+            <button type="submit" class="btn btn-primary w-100 py-2 mb-3">
+                <i class="bi bi-box-arrow-in-right me-2"></i>Sign In
+            </button>
+
+            <!-- Register Link -->
+            <p class="text-center text-muted mb-0">
+                Don't have an account?
+                <a th:href="@{/register}" class="fw-bold" style="color: var(--primary-light);">
+                    Register here
+                </a>
+            </p>
+
+        </form>
+
+        <!-- Demo Credentials Hint -->
+        <hr class="my-3">
+        <div class="text-center">
+            <small class="text-muted">
+                <strong>Admin:</strong> admin@library.com / admin123<br>
+                <strong>User:</strong> Register a new account
+            </small>
+        </div>
+
+    </div>
+</div>
+
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

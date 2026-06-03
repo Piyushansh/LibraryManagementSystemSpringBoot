@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:replace="~{fragments/layout :: head('Issue Book')}"></head>
+<body>
+
+<nav th:replace="~{fragments/layout :: navbar}"></nav>
+
+<div class="page-wrapper">
+<div class="container">
+<div class="row justify-content-center">
+<div class="col-lg-6">
+
+    <div class="page-header">
+        <h2><i class="bi bi-book-fill me-2"></i>Issue a Book</h2>
+        <p class="text-muted mb-0">Select a user and an available book to issue</p>
+    </div>
+
+    <a th:href="@{/issues}" class="btn btn-outline-secondary mb-3">
+        <i class="bi bi-arrow-left me-2"></i>Back to Issues
+    </a>
+
+    <!-- Error Message -->
+    <div th:if="${errorMessage}" class="alert alert-danger">
+        <i class="bi bi-exclamation-triangle me-2"></i>
+        <span th:text="${errorMessage}"></span>
+    </div>
+
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <i class="bi bi-book-fill me-2"></i>Issue Book Form
+        </div>
+        <div class="card-body p-4">
+
+            <form th:action="@{/issues/new}" method="post">
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <!-- Select User -->
+                <div class="mb-4">
+                    <label for="userId" class="form-label">
+                        <i class="bi bi-person me-1"></i>Select User <span class="text-danger">*</span>
+                    </label>
+                    <select name="userId" id="userId" class="form-select" required>
+                        <option value="">-- Choose a user --</option>
+                        <!-- Loop through all users -->
+                        <option th:each="user : ${users}"
+                                th:value="${user.id}"
+                                th:text="${user.name} + ' (' + ${user.email} + ')'">
+                            User
+                        </option>
+                    </select>
+                </div>
+
+                <!-- Select Book -->
+                <div class="mb-4">
+                    <label for="bookId" class="form-label">
+                        <i class="bi bi-book me-1"></i>Select Book <span class="text-danger">*</span>
+                    </label>
+                    <select name="bookId" id="bookId" class="form-select" required>
+                        <option value="">-- Choose a book --</option>
+                        <!-- Loop through available books only -->
+                        <option th:each="book : ${books}"
+                                th:value="${book.id}"
+                                th:text="${book.title} + ' — ' + ${book.author} + ' (' + ${book.availableQuantity} + ' available)'">
+                            Book
+                        </option>
+                    </select>
+                    <small class="form-text text-muted">
+                        Only books with available copies are shown.
+                    </small>
+                </div>
+
+                <!-- Info Box -->
+                <div class="alert alert-info mb-4">
+                    <i class="bi bi-info-circle me-2"></i>
+                    <strong>Loan Period:</strong> 14 days &nbsp;|&nbsp;
+                    <strong>Fine:</strong> ₹2 per day after due date
+                </div>
+
+                <!-- Submit -->
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success flex-fill">
+                        <i class="bi bi-check-circle me-2"></i>Issue Book
+                    </button>
+                    <a th:href="@{/issues}" class="btn btn-outline-secondary flex-fill">
+                        <i class="bi bi-x-circle me-2"></i>Cancel
+                    </a>
+                </div>
+
+            </form>
+        </div>
+    </div>
+
+</div>
+</div>
+</div>
+</div>
+
+<footer th:replace="~{fragments/layout :: footer}"></footer>
+<div th:replace="~{fragments/layout :: scripts}"></div>
+</body>
+</html>

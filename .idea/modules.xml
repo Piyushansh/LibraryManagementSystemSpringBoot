@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/library-management/library-management.iml" filepath="$PROJECT_DIR$/library-management/library-management.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/library-management_SpringBoot.iml" filepath="$PROJECT_DIR$/.idea/library-management_SpringBoot.iml" />
+    </modules>
+  </component>
+</project>
